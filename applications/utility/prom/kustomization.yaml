@@ -5,7 +5,7 @@ helmCharts:
 - name: kube-prometheus-stack
   version: 58.6.0
   repo: https://prometheus-community.github.io/helm-charts
-  valuesFile: https://raw.githubusercontent.com/argadepp/argocd-demo/master/values/prom-values.yaml
+  valuesFile: ./prom-values.yaml
   releaseName: prom
   ## IF needed
   includeCRDs: true
