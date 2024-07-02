@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     path: applications/utility/prom
-    repoURL: https://github.com/argadepp/argocd-demo
+    repoURL: git@github.com:argadepp/argocd-demo.git
     targetRevision: master
   destination:
     namespace: demo
