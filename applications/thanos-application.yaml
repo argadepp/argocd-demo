@@ -2,15 +2,15 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   annotations:
-    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: argocd-pratik
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: new-notifications
   name: thanos-app
   namespace: utilities
 spec:
   project: default
   source:
-    path: applications/kustomize
-    repoURL: https://github.com/argadepp/argocd-demo.git
-    targetRevision: master
+    path: kustomize-and-helm/app/base
+    repoURL: https://github.com/argadepp/gitops-examples-argocd
+    targetRevision: main
   destination:
     namespace: demo
     server: https://kubernetes.default.svc
