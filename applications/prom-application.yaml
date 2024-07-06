@@ -12,7 +12,7 @@ spec:
     repoURL: git@github.com:argadepp/argocd-demo
     targetRevision: master
   destination:
-    namespace: demo
+    namespace: utilities
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
