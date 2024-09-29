@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus
+  namespace: argocd  # ArgoCD's namespace (could be "argocd" or another namespace where ArgoCD is installed)
+spec:
+  project: default  # You can modify the project name if using a custom project
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: kube-prometheus
+    targetRevision: latest  # or specify a particular chart version
+    helm:
+      valueFiles:
+        - values/prom-values.yaml  # Path to values file, assuming it's in the Git repo
+  destination:
+    server: https://kubernetes.default.svc  # Cluster URL, default for the same cluster where ArgoCD is running
+    namespace: utilities
+  syncPolicy:
+    automated:
+      prune: true   # Automatically remove resources that are no longer tracked by ArgoCD
+      selfHeal: true  # Automatically sync if drift is detected

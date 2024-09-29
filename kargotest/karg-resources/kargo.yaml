@@ -1,0 +1,103 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: kargo-demo
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: kargo-demo-repo
+  namespace: kargo-demo
+  labels:
+    kargo.akuity.io/cred-type: git
+stringData:
+  repoURL: https://github.com/argadepp/kargo-demo.git
+  username: argadepp
+  password: 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
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: kargo-demo
+  namespace: kargo-demo
+spec:
+  subscriptions:
+  - image:
+      repoURL: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+      semverConstraint: ^0.1.5
+      discoveryLimit: 5
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: test
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: kargo-demo
+    sources:
+      direct: true
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: https://github.com/argadepp/kargo-demo.git
+      writeBranch: stage/test
+      kustomize:
+        images:
+        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+          path: stages/test
+    argoCDAppUpdates:
+    - appName: kargo-demo-test
+      appNamespace: argocd
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: uat
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: kargo-demo
+    sources:
+      stages:
+      - test
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: https://github.com/argadepp/kargo-demo.git
+      writeBranch: stage/uat
+      kustomize:
+        images:
+        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+          path: stages/uat
+    argoCDAppUpdates:
+    - appName: kargo-demo-uat
+      appNamespace: argocd
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod
+  namespace: kargo-demo
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: kargo-demo
+    sources:
+      stages:
+      - uat
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: https://github.com/argadepp/kargo-demo.git
+      writeBranch: stage/prod
+      kustomize:
+        images:
+        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+          path: stages/prod
+    argoCDAppUpdates:
+    - appName: kargo-demo-prod
+      appNamespace: argocd
