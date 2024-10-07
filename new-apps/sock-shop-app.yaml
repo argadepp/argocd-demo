@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sock-shop
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argadepp/argocd-demo.git
+    targetRevision: master # Specify the version of the grafana-operator chart
+    path: applications/sockshop
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: utilities
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  
+      - "ServerSideApply=true"          
