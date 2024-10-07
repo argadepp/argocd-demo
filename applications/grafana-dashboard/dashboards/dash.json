@@ -1,0 +1,27 @@
+{
+    "title": "Prometheus Monitoring Dashboard",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "CPU Usage",
+        "targets": [
+          {
+            "expr": "sum(rate(node_cpu_seconds_total{mode!='idle'}[5m]))",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "datasource": "prometheus"
+      },
+      {
+        "type": "graph",
+        "title": "Memory Usage",
+        "targets": [
+          {
+            "expr": "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "datasource": "prometheus"
+      }
+    ]
+  }

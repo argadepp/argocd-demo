@@ -1,22 +1,44 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kube-prometheus
-  namespace: argocd  # ArgoCD's namespace (could be "argocd" or another namespace where ArgoCD is installed)
+  name: kube-prometheus-stack
+  namespace: argocd
 spec:
-  project: default  # You can modify the project name if using a custom project
-
+  project: default
   source:
-    repoURL: https://charts.bitnami.com/bitnami
-    chart: kube-prometheus
-    targetRevision: latest  # or specify a particular chart version
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 58.6.0  # Specify the version of kube-prometheus-stack
+    chart: kube-prometheus-stack
     helm:
-      valueFiles:
-        - values/prom-values.yaml  # Path to values file, assuming it's in the Git repo
+      values: |
+        ## Minimal Helm values ##
+        grafana:
+          enables: false
+        alertmanager:
+          enables: false  
+        prometheus:
+          ingress:
+            enabled: true
+            hosts:
+              - prometheus.localhost
+          prometheusSpec:
+            storageSpec: 
+             volumeClaimTemplate:
+               spec:
+                #  storageClassName: gluster
+                 accessModes: ["ReadWriteOnce"]
+                 resources:
+                   requests:
+                     storage: 1Gi    
+
   destination:
-    server: https://kubernetes.default.svc  # Cluster URL, default for the same cluster where ArgoCD is running
+    server: https://kubernetes.default.svc
     namespace: utilities
   syncPolicy:
     automated:
-      prune: true   # Automatically remove resources that are no longer tracked by ArgoCD
-      selfHeal: true  # Automatically sync if drift is detected
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true    
+      - "ServerSideApply=true"        
