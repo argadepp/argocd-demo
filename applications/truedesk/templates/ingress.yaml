@@ -1,0 +1,28 @@
+{{- if .Values.trudesk.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-trudesk-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt  
+  labels:
+    app: trudesk
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.trudesk.ingress.hosts }}
+    secretName: desk-tls
+  rules:
+  - host: {{ .Values.trudesk.ingress.hosts }}
+    http:
+      paths:
+      {{- range .Values.trudesk.ingress.paths }}
+        - path: {{ .path }}
+          pathType: {{ .pathType }}
+          backend:
+            service:
+              name: {{ $.Release.Name }}
+              port:
+                number: {{ $.Values.trudesk.service.port }}
+      {{- end }}
+{{- end }}

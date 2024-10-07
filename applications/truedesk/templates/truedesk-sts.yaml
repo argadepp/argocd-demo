@@ -1,0 +1,57 @@
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-trudesk
+spec:
+  serviceName: "trudesk"
+  replicas: {{ .Values.trudesk.replicaCount }}
+  selector:
+    matchLabels:
+      app: trudesk
+  template:
+    metadata:
+      labels:
+        app: trudesk
+    spec:
+      containers:
+      - name: trudesk
+        image:  "{{ .Values.trudesk.image.repository }}:{{ .Values.trudesk.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.trudesk.service.port }}
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: TRUDESK_DOCKER
+          value: "true"
+        - name: TD_MONGODB_SERVER
+          value: "{{ .Release.Name }}-mongo"
+        - name: TD_MONGODB_DATABASE
+          value: "trudesk"
+        - name: USE_XFORWARDIP
+          value: "true"
+        volumeMounts:
+        - name: trudesk-uploads
+          mountPath: /usr/src/trudesk/public/uploads
+        - name: trudesk-backups
+          mountPath: /usr/src/trudesk/backups
+        resources:
+          requests:
+            memory: {{ .Values.trudesk.resources.requests.memory }}
+            cpu: {{ .Values.trudesk.resources.requests.cpu }}
+  volumeClaimTemplates:
+  - metadata:
+      name: trudesk-uploads
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.trudesk.volumes.uploads.size }}
+  - metadata:
+      name: trudesk-backups
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.trudesk.volumes.backups.size }}

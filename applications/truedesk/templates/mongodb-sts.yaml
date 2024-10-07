@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mongo
+spec:
+  serviceName: "mongo"
+  replicas: {{ .Values.mongo.replicaCount }}
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.mongo.service.port }}
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /var/lib/mongo
+            - name: mongo-db
+              mountPath: /data/db
+          resources:
+            requests:
+              memory: {{ .Values.mongo.resources.requests.memory }}
+              cpu: {{ .Values.mongo.resources.requests.cpu }}
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.mongo.volumes.data.size }}
+    - metadata:
+        name: mongo-db
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.mongo.volumes.db.size }}
