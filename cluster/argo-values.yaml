@@ -1,0 +1,12 @@
+configs:
+  params:
+    server.insecure: true  
+  secret:
+    argocdServerAdminPassword: "$2a$10$5vm8wXaSdbuff0m9l21JdevzXBzJFPCi8sy6OOnpZMAG.fOXL7jvO"  
+server:
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    hostname: "argo.localhost"
+    path: /
+    pathType: Prefix
