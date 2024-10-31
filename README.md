@@ -21,7 +21,9 @@ This project demonstrates a microservices-based application deployment on a loca
 ├── Makefile                    # Build and deployment commands
 └── README.md                   # Project documentation
 
-📋 Prerequisites
+---
+
+## 📋 Prerequisites
 Before you begin, ensure you have the following installed:
 
 Docker 🐳
