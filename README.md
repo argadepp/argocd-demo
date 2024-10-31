@@ -29,7 +29,7 @@ KIND 🌟
 kubectl 🔧
 Make sure that both KIND and kubectl are in your system's PATH.
 
-## 🛠️ Setup Instructions
+🛠️ Setup Instructions
 1. Create a KIND Cluster
 To create the KIND cluster as defined in cluster/cluster.yaml, run:
 
@@ -98,7 +98,7 @@ Grafana: A visualization tool with preconfigured dashboards. 📈
 Prometheus: For metric collection and alerting. 🚨
 These components are configured in the apps/ directory with ready-to-apply manifests for observability setup.
 
-## 🤝 Contributing
+🤝 Contributing
 To contribute to this project, please follow these steps:
 
 Fork the repository.
