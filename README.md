@@ -8,7 +8,6 @@ This project demonstrates a microservices-based application deployment on a loca
 
 ## 📁 Project Structure
 
-```plaintext
 .
 ├── applications                # Application Helm charts and deployment manifests
 │   ├── grafana-dashboard       # Grafana dashboards and configs
@@ -21,8 +20,6 @@ This project demonstrates a microservices-based application deployment on a loca
 ├── Makefile                    # Build and deployment commands
 └── README.md                   # Project documentation
 
----
-
 ## 📋 Prerequisites
 Before you begin, ensure you have the following installed:
 
@@ -30,3 +27,4 @@ Docker 🐳
 KIND 🌟
 kubectl 🔧
 Make sure that both KIND and kubectl are in your system's PATH.
+
