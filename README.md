@@ -7,7 +7,6 @@ This project demonstrates a microservices-based application deployment on a loca
 ---
 
 ## 📁 Project Structure
-
 .
 ├── applications                # Application Helm charts and deployment manifests
 │   ├── grafana-dashboard       # Grafana dashboards and configs
@@ -19,6 +18,7 @@ This project demonstrates a microservices-based application deployment on a loca
 ├── kargotest                   # Test resources for Kargo setup
 ├── Makefile                    # Build and deployment commands
 └── README.md                   # Project documentation
+
 
 ## 📋 Prerequisites
 Before you begin, ensure you have the following installed:
