@@ -77,7 +77,7 @@ The applications directory contains multiple applications, including:
 - **Log Application:** A sample application to test Loki logging.
 - **SockShop:** A microservices-based application mimicking an online shop.
 - **Truedesk:** A support desk application with MongoDB and Elasticsearch resources.
-
+You can find the complete project in the repository: [argocd-demo.git](https://github.com/argadepp/argocd-demo.git)
 ## 📦 Applications
 🌟 Grafana Dashboard
 The Grafana dashboard configuration can be found in applications/grafana-dashboard, including sample JSON dashboards and monitoring templates.
