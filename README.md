@@ -1,4 +1,4 @@
-# 🎉 Project Title
+# 🎉 Kubernetes Microservices Deployment with Observability
 
 ## 🚀 Overview
 
