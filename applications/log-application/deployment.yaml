@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-logger
+  namespace: default  # Replace with your target namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-logger
+  template:
+    metadata:
+      labels:
+        app: flask-logger
+    spec:
+      containers:
+      - name: flask-logger
+        image: python:3.8-slim
+        env:
+          - name: FLASK_APP
+            value: /app/app.py
+          - name: FLASK_RUN_HOST
+            value: "0.0.0.0"
+          - name: FLASK_RUN_PORT
+            value: "8080"
+        command: ["sh", "-c", "pip install flask && python -m flask run"]
+        ports:
+          - containerPort: 8080
+        volumeMounts:
+          - name: app-source
+            mountPath: /app
+      volumes:
+        - name: app-source
+          configMap:
+            name: flask-app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-logger-service
+  namespace: default  # Replace with your target namespace
+spec:
+  selector:
+    app: flask-logger
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-app
+  namespace: default  # Replace with your target namespace
+data:
+  app.py: |
+    from flask import Flask
+    import logging
+    import sys
+
+    app = Flask(__name__)
+
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+    @app.route('/')
+    def hello():
+        app.logger.info('Hello from Flask logger!')
+        return "Hello, world!"
