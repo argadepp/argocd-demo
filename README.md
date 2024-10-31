@@ -24,9 +24,9 @@ This project demonstrates a microservices-based application deployment on a loca
 ## 📋 Prerequisites
 Before you begin, ensure you have the following installed:
 
-Docker 🐳
-KIND 🌟
-kubectl 🔧
+- Docker 🐳
+- KIND 🌟
+- kubectl 🔧
 Make sure that both KIND and kubectl are in your system's PATH.
 
 ## 🛠️ Setup Instructions
@@ -73,10 +73,10 @@ This command deletes Kubernetes resources and then removes the KIND cluster.
 ## 🛠️ Application Deployment
 The applications directory contains multiple applications, including:
 
-Grafana Dashboard: Custom Grafana dashboard configurations.
-Log Application: A sample application to test Loki logging.
-SockShop: A microservices-based application mimicking an online shop.
-Truedesk: A support desk application with MongoDB and Elasticsearch resources.
+- **Grafana Dashboard:** Custom Grafana dashboard configurations.
+- **Log Application:** A sample application to test Loki logging.
+- **SockShop:** A microservices-based application mimicking an online shop.
+- **Truedesk:** A support desk application with MongoDB and Elasticsearch resources.
 📦 Applications
 🌟 Grafana Dashboard
 The Grafana dashboard configuration can be found in applications/grafana-dashboard, including sample JSON dashboards and monitoring templates.
@@ -93,9 +93,9 @@ The Truedesk application is available in applications/truedesk, with supporting 
 ## 📊 Observability Stack
 This project includes a powerful observability stack comprising:
 
-Loki: A logging backend for monitoring logs. 📝
-Grafana: A visualization tool with preconfigured dashboards. 📈
-Prometheus: For metric collection and alerting. 🚨
+- Loki: A logging backend for monitoring logs. 📝
+- Grafana: A visualization tool with preconfigured dashboards. 📈
+- Prometheus: For metric collection and alerting. 🚨
 These components are configured in the apps/ directory with ready-to-apply manifests for observability setup.
 
 ## 🤝 Contributing
