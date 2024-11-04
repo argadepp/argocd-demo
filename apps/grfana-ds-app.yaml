@@ -13,6 +13,7 @@ spec:
       values: |
         ## Minimal Helm values ##    
         namePrefix: std-practice-ds-
+        grafanaInstance: std-practice-grafana-operator
         datasources:
           - name: loki
             type: loki
