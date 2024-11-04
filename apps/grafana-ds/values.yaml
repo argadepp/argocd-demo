@@ -1,20 +1,21 @@
 global:
-
   namePrefix: std-practice-ds-
   grafanaInstance: std-practice-grafana-operator
+
 datasources:
   - name: loki
+    namespace: utilities
     type: loki
     url: http://loki-app.utilities.svc.cluster.local:3100
     access: proxy
     jsonData:
       tlsSkipVerify: true
       timeInterval: "5s"
-    namespace: utilities  
+
   - name: prometheus
+    namespace: utilities
     type: prometheus
     url: http://prometheus.utilities.svc.cluster.local:9090
     access: proxy
     jsonData:
       tlsSkipVerify: true
-    namespace: utilities   
