@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: std-practice-grafana-ds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argadepp/argocd-demo.git
+    targetRevision: master
+    path: apps/grafana-ds
+    helm:
+      values: |
+        ## Minimal Helm values ##    
+        namePrefix: std-practice-ds-
+        datasources:
+          - name: loki
+            type: loki
+            url: http://loki-app.utilities.svc.cluster.local:3100
+            access: proxy
+            jsonData:
+              tlsSkipVerify: true
+              timeInterval: "5s"
+            namespace: utilities  
+          - name: prometheus
+            type: prometheus
+            url: http://prometheus.utilities.svc.cluster.local:9090
+            access: proxy
+            jsonData:
+              tlsSkipVerify: true
+            namespace: utilities               
+        
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: utilities
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  
+      - "ServerSideApply=true"
+
