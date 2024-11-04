@@ -23,13 +23,6 @@ spec:
             jsonData:
               tlsSkipVerify: true
               timeInterval: "5s"
-            namespace: utilities  
-          - name: prometheus
-            type: prometheus
-            url: http://prometheus.utilities.svc.cluster.local:9090
-            access: proxy
-            jsonData:
-              tlsSkipVerify: true
             namespace: utilities               
         
   destination:
