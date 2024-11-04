@@ -2,29 +2,25 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-{{ toYaml .Values.ingress.annotations | indent 4 }}
+    {{- toYaml .Values.ingress.annotations | indent 4 }}
   labels:
-{{ toYaml .Values.ingress.labels | indent 4 }}
-  name: {{ template "fullname" .}}-socks-ingress
+    {{- toYaml .Values.ingress.labels | indent 4 }}
+  name: {{ template "fullname" . }}-socks-ingress
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}  # Moved the host field outside of paths
+    http:
       paths:
-      - backend:
+      - path: /
+        pathType: Prefix
+        backend:
           service:
             name: front-end
             port:
               number: 80
-        path: /
-        pathType: Prefix
-    {{- if .Values.host }}
-    host: {{ template "host" . }}
-    {{- end }}
-  {{- if .Values.ingress.tlsSecretName }}
+  {{- if .Values.ingress.tlsSecretName }} # Only include TLS configuration if specified
   tls:
   - secretName: {{ .Values.ingress.tlsSecretName }}
-    {{- if .Values.host }}
     hosts:
-    - {{ template "host" . }}
-    {{- end }}
+    - {{ .Values.ingress.host }}
   {{- end }}

@@ -1,47 +1,49 @@
+{{- if .Values.grafanaOperator.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: grafana-operator
+  name: {{ .Values.namePrefix }}grafana-operator
   namespace: argocd
 spec:
-  project: default
+  project: {{ .Values.global.project }}
   source:
-    repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 4.7.2  # Specify the version of the grafana-operator chart
-    chart: grafana-operator
+    repoURL: {{ .Values.grafanaOperator.repoURL }}
+    targetRevision: {{ .Values.grafanaOperator.targetRevision }}
+    chart: {{ .Values.grafanaOperator.chart }}
     helm:
       values: |
         ## Minimal Helm values ##
-        global:       
+        global:
         operator:
           enabled: true
           image:
             registry: docker.io
             repository: bitnami/grafana-operator
-            tag: 5.13.0-debian-12-r0
+            tag: {{ .Values.grafanaOperator.operatorImageTag }}
             digest: ""
         grafana:
           enabled: true
           image:
             registry: docker.io
             repository: bitnami/grafana
-            tag: 11.2.0-debian-12-r3
+            tag: {{ .Values.grafanaOperator.grafanaImageTag }}
             digest: ""
           ingress:
             enabled: true
             ingressClassName: "nginx"
-            host: grafana.localhost
+            host: {{ .Values.grafanaOperator.ingressHost }}
             path: /
           persistence:
             enabled: true
-            size: 1Gi
+            size: {{ .Values.grafanaOperator.persistenceSize }}
   destination:
-    server: https://kubernetes.default.svc
-    namespace: utilities
+    server: {{ .Values.global.clusterEndPoint }}
+    namespace: {{ .Values.global.destNamespace }}
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true  
-      - "ServerSideApply=true"          
+      - "ServerSideApply=true"
+{{- end }}

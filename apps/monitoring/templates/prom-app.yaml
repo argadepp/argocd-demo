@@ -1,0 +1,32 @@
+{{- if .Values.prom.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}prometheus-stack
+  namespace: argocd
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 9.6.5  # Specify the version of kube-prometheus-stack
+    chart: kube-prometheus
+    helm:
+      values: |
+        ## Minimal Helm values ##
+        prometheus:
+          ingress:
+            enabled: true
+            hostname: prom.localhost
+            ingressClassName: "nginx"
+  destination:
+    server: {{ .Values.global.clusterEndPoint }}
+    namespace: {{ .Values.global.destNamespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true    
+      - "ServerSideApply=true"        
+{{- end }}      

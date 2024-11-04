@@ -1,10 +1,11 @@
+{{- if .Values.loki.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki-app
+  name: {{ .Values.namePrefix }}loki-stack
   namespace: argocd
 spec:
-  project: default
+  project: {{ .Values.global.project }}
   source:
     repoURL: https://grafana.github.io/helm-charts
     targetRevision: 2.10.2  # Specify the version of the grafana-operator chart
@@ -18,7 +19,7 @@ spec:
         loki:
           enabled: true
           isDefault: true
-          url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
+          
           readinessProbe:
             httpGet:
               path: /ready
@@ -35,8 +36,8 @@ spec:
         fluent-bit:
           enabled: true    
   destination:
-    server: https://kubernetes.default.svc
-    namespace: utilities
+    server: {{ .Values.global.clusterEndPoint }}
+    namespace: {{ .Values.global.destNamespace }}
   syncPolicy:
     automated:
       prune: true
@@ -44,3 +45,4 @@ spec:
     syncOptions:
       - CreateNamespace=true  
       - "ServerSideApply=true"          
+{{- end }}
