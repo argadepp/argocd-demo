@@ -11,9 +11,10 @@ spec:
     path: apps/grafana-ds
     helm:
       values: |
-        ## Minimal Helm values ##    
-        namePrefix: std-practice-ds-
-        grafanaInstance: std-practice-grafana-operator
+        ## Minimal Helm values ## 
+        global:   
+          namePrefix: std-practice-ds-
+          grafanaInstance: std-practice-grafana-operator
         datasources:
           - name: loki
             type: loki
