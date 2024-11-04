@@ -2,7 +2,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:
-  name: {{ .Values.namePrefix }}{{ .name }}
+  name: {{ .namePrefix }}{{ .name }}
   namespace: {{ .namespace }}
 spec:
   instanceSelector:
