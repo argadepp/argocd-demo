@@ -20,6 +20,7 @@ spec:
     access: {{ .access }}
     url: {{ .url }}
     jsonData:
+      tlsSkipVerify: false 
       {{- range $key, $value := .jsonData }}
       {{ $key }}: {{ $value | quote }}
       {{- end }}
