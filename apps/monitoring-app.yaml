@@ -40,6 +40,10 @@ spec:
         prom: 
           enabled: true    
           ingressHost: prom.localhost
+          remoteWrite:
+          - url: http://std-practice-grafana-mimir-distributor.utilities.svc.cluster.local/api/v1/push
+          remoteRead:
+          - url: http://std-practice-grafana-mimir-querier.utilities.svc.cluster.local/api/v1/read 
         
         
   destination:

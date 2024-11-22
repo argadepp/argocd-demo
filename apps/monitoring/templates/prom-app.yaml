@@ -19,9 +19,9 @@ spec:
             hostname: prom.localhost
             ingressClassName: "nginx"
           remoteWrite:
-          - url: http://mimir-distributor.utilities.svc.cluster.local/api/v1/push
+          - url: http://std-practice-grafana-mimir-distributor.utilities.svc.cluster.local/api/v1/push
           remoteRead:
-          - url: http://mimir-querier.utilities.svc.cluster.local/api/v1/read      
+          - url: http://std-practice-grafana-mimir-querier.utilities.svc.cluster.local/api/v1/read      
   destination:
     server: {{ .Values.global.clusterEndPoint }}
     namespace: {{ .Values.global.destNamespace }}
