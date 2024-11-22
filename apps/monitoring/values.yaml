@@ -16,6 +16,11 @@ grafanaOperator:
   ingressHost: grafana.localhost
   persistenceSize: 1Gi
 
+grafanaMimir:
+  enabled: true
+  repoURL: https://grafana.github.io/helm-charts
+  targetRevision: 5.5.0 
+  chart: mimir-distributed
 
 loki:
   enabled: true

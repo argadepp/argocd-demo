@@ -1,0 +1,66 @@
+{{- if .Values.grafanaMimir.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}grafana-mimir
+  namespace: argocd
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ .Values.grafanaMimir.repoURL }}
+    targetRevision: {{ .Values.grafanaMimir.targetRevision }}
+    chart: {{ .Values.grafanaMimir.chart }}
+    helm:
+      values: |
+        ## Global Settings
+        global:
+          service: mimir
+          app: mimir
+
+        ## Storage Backend Configuration
+        blocksStorage:
+          backend: s3
+          s3:
+            endpoint: s3.amazonaws.com
+            bucket_name: devoptech-dev-terraform-backend
+            secretKey: 
+              accessKey: /mimir-aws/credentials/access_key_id
+              secretKey: /mimir-aws/credentials/secret_access_key
+            secretKeyRef:
+              name: mimir-aws-credentials
+              namespace: mimir
+            region: ap-south-1
+
+        ## Ingestion Configuration
+        distributor:
+          replicas: 2
+        ingester:
+          replicas: 2
+        storeGateway:
+          replicas: 2
+
+        ## Query Frontend and Querier
+        queryFrontend:
+          replicas: 2
+        querier:
+          replicas: 2
+
+        ## Monitoring
+        metrics:
+          serviceMonitor:
+            enabled: true
+        alerts:
+          enabled: true
+        logging:
+          level: info
+
+  destination:
+    server: {{ .Values.global.clusterEndPoint }}
+    namespace: {{ .Values.global.destNamespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

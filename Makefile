@@ -21,13 +21,21 @@ ingress: deploy ingress controller
 install-ingress:
 	kubectl create namespace ingress-nginx
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-
+sleep1:
+	sleep 20
 #install specific utility on cluster
 install-argocd:
 	helm repo add argocd https://argoproj.github.io/argo-helm
 	helm upgrade -i argocd argocd/argo-cd --version 7.3.4 -n argocd --create-namespace -f cluster/argo-values.yaml
-		
-# Delete kind cluster
+sleep2:
+	sleep 60
+install-apps:
+	kubectl apply -f apps/monitoring-app.yaml
+	kubectl apply -f apps/grafana-ds-app.yaml
+get-pass:
+	kubectl get secret -n utilities std-practice-grafana-operator-grafana-admin-credentials -o json | jq -r .data.GF_SECURITY_ADMIN_PASSWORD | base64 -d
+
+#Delete kind cluster
 .PHONY: delete-cluster
 delete-cluster:
 	$(KIND) delete cluster --name $(CLUSTER_NAME)

@@ -15,7 +15,7 @@ datasources:
   - name: prometheus
     namespace: utilities
     type: prometheus
-    url: http://prometheus.utilities.svc.cluster.local:9090
+    url: http://prometheus-operated.utilities.svc.cluster.local:9090
     access: proxy
     jsonData:
       tlsSkipVerify: true
