@@ -24,13 +24,13 @@ spec:
               tlsSkipVerify: true
               timeInterval: "5s"
             namespace: utilities  
-          - name: prometheus
-            type: prometheus
-            url: http://prometheus-operated.utilities.svc.cluster.local:9090
-            access: proxy
-            jsonData:
-              tlsSkipVerify: true
-            namespace: utilities               
+          # - name: prometheus
+          #   type: prometheus
+          #   url: http://prometheus-operated.utilities.svc.cluster.local:9090
+          #   access: proxy
+          #   jsonData:
+          #     tlsSkipVerify: true
+          #   namespace: utilities               
         
   destination:
     server: https://kubernetes.default.svc

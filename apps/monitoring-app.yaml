@@ -38,7 +38,7 @@ spec:
           enabled: true
           
         prom: 
-          enabled: true    
+          enabled: false    
           ingressHost: prom.localhost
           remoteWrite:
           - url: http://std-practice-grafana-mimir-distributor.utilities.svc.cluster.local/api/v1/push
