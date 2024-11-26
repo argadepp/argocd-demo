@@ -32,24 +32,7 @@ spec:
           datasource:
             jsonData: "{}"
             uid: ""  
-
-        promtail:
-          enabled: true
-          config:
-            logLevel: info
-            serverPort: 3101
-            clients:
-              - url: http://std-practice-loki-stack:3100/loki/api/v1/push
-            positions:
-              filename: /var/log/positions.yaml
-            scrape_configs:
-              - job_name: "kind-audit-logs"
-                static_configs:
-                  - targets:
-                      - localhost
-                    labels:
-                      job: "kind-audit-logs"
-                      __path__: /var/log/kubernetes/kube-apiserver-audit.log    
+  
         fluent-bit:
           enabled: true    
   destination:
