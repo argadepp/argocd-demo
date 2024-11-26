@@ -16,6 +16,9 @@ all: create-cluster
 create-cluster:
 	$(KIND) create cluster --name $(CLUSTER_NAME) --config $(KIND_CONFIG)
 
+.PHONY: trace-cluster
+trace-cluster:
+	$(KIND) create cluster --name $(CLUSTER_NAME) --config cluster/trace-cluster.yaml
 #install ingress controller
 ingress: deploy ingress controller
 install-ingress:

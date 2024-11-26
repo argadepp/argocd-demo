@@ -6,6 +6,9 @@ nodes:
   kubeadmConfigPatches:
   - |
     kind: ClusterConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"    
     apiServer:
         extraArgs:
           audit-log-path: /var/log/kubernetes/kube-apiserver-audit.log
@@ -21,23 +24,7 @@ nodes:
             mountPath: "/var/log/kubernetes"
             readOnly: false
             pathType: DirectoryOrCreate
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
   extraMounts:
   - hostPath: ./cluster/audit-policy.yaml
     containerPath: /etc/kubernetes/policies/audit-policy.yaml
     readOnly: true
-  extraPortMappings:
-  - containerPort: 80
-    hostPort: 80
-    protocol: TCP
-  - containerPort: 443
-    hostPort: 443
-    protocol: TCP
-- role: worker
-  image: kindest/node:v1.27.13
-- role: worker
-  image: kindest/node:v1.27.13    
