@@ -7,6 +7,6 @@ server:
   ingress:
     enabled: true
     ingressClassName: "nginx"
-    hostname: "argo.localhost"
+    hostname: "argo.pratikargade.online"
     path: /
     pathType: Prefix
