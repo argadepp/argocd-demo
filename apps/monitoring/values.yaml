@@ -28,4 +28,6 @@ loki:
 prom: 
   enabled: true    
   ingressHost: prom.localhost
+cloudwatch:
+  enabled: true  
 

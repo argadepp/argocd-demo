@@ -45,7 +45,8 @@ spec:
           remoteRead:
           - url: http://std-practice-grafana-mimir-querier.utilities.svc.cluster.local/api/v1/read 
         
-        
+        cloudwatch:
+          enabled: true  
   destination:
     server: https://kubernetes.default.svc
     namespace: utilities

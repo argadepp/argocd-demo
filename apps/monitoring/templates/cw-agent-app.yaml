@@ -1,0 +1,73 @@
+{{- if .Values.cloudwatch.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}cw-stack
+  namespace: argocd
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: https://aws.github.io/eks-charts
+    targetRevision: 0.0.11 # Specify the version of kube-prometheus-stack
+    chart: aws-cloudwatch-metrics
+    helm:
+      values: |
+        ## Minimal Helm values ##
+        image:
+          repository: amazon/cloudwatch-agent
+          tag: 1.300032.2b361
+          pullPolicy: IfNotPresent
+        
+        clusterName: eks-monitoring-cluster
+        
+        enhancedContainerInsights:
+          enabled: true
+        
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 200m
+            memory: 200Mi
+        
+        serviceAccount:
+          create: true
+          name: cloudwatch-agent
+          annotations: []
+        
+        hostNetwork: false
+        
+        nodeSelector: {}
+        
+        tolerations: []
+        
+        affinity: {}
+        
+        # For bottlerocket OS (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights-troubleshooting.html#ContainerInsights-troubleshooting-bottlerocket)
+        # containerdSockPath: /run/dockershim.sock
+        containerdSockPath: /run/containerd/containerd.sock
+        
+        ## Assign a PriorityClassName to pods if set
+        # priorityClassName:
+        
+        statsd:
+          enabled: false
+          port: 8125
+          protocol: UDP
+          # Overrides default values in the agent configuration if set
+          # cloudwatch_namespace:
+          # metrics_aggregation_interval:
+          # metrics_collection_interval:
+  destination:
+    server: {{ .Values.global.clusterEndPoint }}
+    namespace: {{ .Values.global.destNamespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true    
+      - "ServerSideApply=true"        
+{{- end }}      
