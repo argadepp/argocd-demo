@@ -16,6 +16,10 @@ all: create-cluster
 create-cluster:
 	$(KIND) create cluster --name $(CLUSTER_NAME) --config $(KIND_CONFIG)
 
+.PHONY: eks-cluster
+create-cluster:
+	eksctl create cluster -f cluster/eks-cluster.yaml
+
 .PHONY: trace-cluster
 trace-cluster:
 	$(KIND) create cluster --name $(CLUSTER_NAME) --config cluster/trace-cluster.yaml
