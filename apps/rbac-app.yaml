@@ -25,9 +25,9 @@ spec:
               - "dev"
               - "staging"
 
-          # ClusterRole to bind to users, can be 'cluster-admin' or any other pre-defined ClusterRole
-          role:
-            name: "cluster-admin"  # Cluster-wide role name (e.g., cluster-admin, view, edit)
+        # ClusterRole to bind to users, can be 'cluster-admin' or any other pre-defined ClusterRole
+        role:
+          name: "cluster-admin"  # Cluster-wide role name (e.g., cluster-admin, view, edit)
   destination:
     server: https://kubernetes.default.svc
     namespace: utilities
