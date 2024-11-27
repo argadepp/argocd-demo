@@ -1,0 +1,15 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-sc
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3           # Volume type (can be gp2, gp3, io1, st1, sc1)
+  fsType: ext4        # Filesystem type
+  encrypted: "true"   # Enable encryption for EBS volumes
+  kmsKeyId: ""        # (Optional) KMS key ID for encryption; leave empty for default key
+allowVolumeExpansion: true
+reclaimPolicy: Delete  # Retain or Delete (controls what happens when PVC is deleted)
+volumeBindingMode: WaitForFirstConsumer

@@ -2,31 +2,49 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pratik-argade
-  namespace: default
+  name: pargade
+  namespace: utilities
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: default
-  name: pod-deleter
+  name: pod-manager
+  namespace: utilities
 rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["delete"]
+  - apiGroups: [""]
+    resources:
+      - pods
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - update
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: pratik-argade-pod-deleter
-  namespace: default
+  name: pod-manager-binding
+  namespace: utilities
 subjects:
-- kind: ServiceAccount
-  name: pratik-argade
-  namespace: default
+  - kind: ServiceAccount
+    name: pargade
+    namespace: utilities
 roleRef:
   kind: Role
-  name: pod-deleter
+  name: pod-manager
   apiGroup: rbac.authorization.k8s.io
+
 

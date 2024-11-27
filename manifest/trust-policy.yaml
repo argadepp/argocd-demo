@@ -1,0 +1,25 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::637423592422:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/971FBB4A9A72F2DABB51AD44DA3FFB83"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "oidc.eks.ap-south-1.amazonaws.com/id/971FBB4A9A72F2DABB51AD44DA3FFB83:sub": "system:serviceaccount:utilities:pratik-argade",
+                    "oidc.eks.ap-south-1.amazonaws.com/id/971FBB4A9A72F2DABB51AD44DA3FFB83:aud": "sts.amazonaws.com"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::637423592422:user/deploy-role"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
