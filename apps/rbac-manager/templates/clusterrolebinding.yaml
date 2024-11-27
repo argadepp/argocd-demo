@@ -1,0 +1,14 @@
+{{- range .Values.users }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .name }}-cluster-access
+subjects:
+  - kind: User
+    name: {{ .name }}  # User specified in values.yaml
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: {{ $.Values.role.name }}  # Cluster-wide role specified in values.yaml
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

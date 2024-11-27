@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rbac-manager
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argadepp/argocd-demo.git
+    targetRevision: master # Specify the version of the grafana-operator chart
+    path: apps/rbac-manager
+    helm:
+      values: |
+        # values.yaml - Add the list of users and their access rights here
+        users:
+          - name: "pratik-argade"  # User 1
+            role: "view"  # Role for johndoe in the 'default' namespace
+            namespaces:
+              - "default"  # List of namespaces johndoe should have access to
+              - "dev"
+        
+          - name: "pratik-argade"  # User 2
+            role: "edit"  # Role for janedoe in the 'dev' namespace
+            namespaces:
+              - "dev"
+              - "staging"
+
+          # ClusterRole to bind to users, can be 'cluster-admin' or any other pre-defined ClusterRole
+          role:
+            name: "cluster-admin"  # Cluster-wide role name (e.g., cluster-admin, view, edit)
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: utilities
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  
+      - "ServerSideApply=true"          

@@ -15,6 +15,10 @@ iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
 
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["audit"]
+
 nodeGroups:
   - name: ng-1
     instanceType: t3.medium
