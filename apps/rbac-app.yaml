@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/argadepp/argocd-demo.git
     targetRevision: master # Specify the version of the grafana-operator chart
-    path: apps/rbac-manager
+    path: apps/rbacmanager
     helm:
       values: |
         # values.yaml - Add the list of users and their access rights here
