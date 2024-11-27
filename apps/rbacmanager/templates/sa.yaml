@@ -1,0 +1,7 @@
+{{- range .Values.users }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+{{- end }}
