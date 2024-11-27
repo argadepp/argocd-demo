@@ -1,17 +1,10 @@
-# values.yaml - Add the list of users and their access rights here
 users:
-  - name: "pratik-argade"  # User 1
-    role: "view"  # Role for johndoe in the 'default' namespace
-    namespaces:
-      - "default"  # List of namespaces johndoe should have access to
-      - "dev"
-
-  - name: "pratik-argade"  # User 2
-    role: "edit"  # Role for janedoe in the 'dev' namespace
-    namespaces:
-      - "dev"
-      - "staging"
-
-# ClusterRole to bind to users, can be 'cluster-admin' or any other pre-defined ClusterRole
-role:
-  name: "cluster-admin"  # Cluster-wide role name (e.g., cluster-admin, view, edit)
+  - name: "pratik-argade"
+    namespace: "utilities"
+    role: "admin"
+  - name: "vishal-bobade"
+    namespace: "utilities"
+    role: "view"
+  - name: "ruturaj-kadikar"
+    namespace: "utilities"
+    role: "edit"

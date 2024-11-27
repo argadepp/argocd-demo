@@ -1,17 +1,15 @@
-{{- range .Values.users }}  # Loop through the users
-  {{- range .namespaces }}  # Loop through the namespaces for each user
+{{- range .Values.users }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .name }}-namespace-access  # Accessing the user name correctly
-  namespace: {{ . }}  # Accessing the namespace correctly
+  name: {{ .name }}-rolebinding
+  namespace: {{ .namespace }}
 subjects:
   - kind: User
-    name: {{ .Values.name }}  # User name should come from .Values (not .name directly)
+    name: {{ .name }}
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
-  name: {{ .Values.role }}  # Accessing the role from the values.yaml
+  name: {{ .name }}-role
   apiGroup: rbac.authorization.k8s.io
-  {{- end }}
 {{- end }}

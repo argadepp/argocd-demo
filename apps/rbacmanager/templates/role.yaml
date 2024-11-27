@@ -1,10 +1,42 @@
+{{- range .Values.users }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Values.namespaceAccess.role }}
-  namespace: {{ .Values.namespaceAccess.namespace }}
+  namespace: {{ .namespace }}
+  name: {{ .name }}-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "services", "configmaps"]
-    verbs: ["get", "list", "create", "update"]
-  # Add more rules for other resources as necessary
+    resources:
+      - pods
+      - services
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+      - update
+{{- if eq .role "admin" }}
+  - apiGroups: [""]
+    resources:
+      - deployments
+    verbs:
+      - "*"
+{{- else if eq .role "view" }}
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+{{- else if eq .role "edit" }}
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - list
+      - create
+      - update
+{{- end }}
+{{- end }}
