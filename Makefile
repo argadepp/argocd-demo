@@ -19,6 +19,24 @@ create-cluster:
 .PHONY: eks-cluster
 eks-cluster:
 	eksctl create cluster -f cluster/eksctl-cluster.yaml
+.PHONY: eks-ingress
+eks-ingress:
+	helm install nginx-ingress ingress-nginx/ingress-nginx \
+      --namespace ingress-nginx \
+      --create-namespace \
+      --set controller.service.type=LoadBalancer
+
+eks-ebs-addon:
+	eksctl create addon --name aws-ebs-csi-driver --cluster eks-monitoring-cluster --region ap-south-1 --force 
+
+eks-access:
+	eksctl create iamidentitymapping \
+      --region ap-south-1 \
+      --cluster eks-monitoring-cluster \
+      --arn arn:aws:iam::637423592422:role/$(USER) \
+      --group system:masters \
+      --username $(USER) 
+
 
 .PHONY: trace-cluster
 trace-cluster:
