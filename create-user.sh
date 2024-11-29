@@ -15,7 +15,7 @@ aws eks update-kubeconfig \
   --region ap-south-1 \
   --name eks-monitoring-cluster \
   --role-arn arn:aws:iam::637423592422:role/$user \
-  --kubeconfig ./kubeconfig-$user
+  --kubeconfig ~/.kube/$user
   
 eksctl create iamidentitymapping \
 --region ap-south-1 \
@@ -23,3 +23,5 @@ eksctl create iamidentitymapping \
 --arn arn:aws:iam::637423592422:role/$user \
 --group system:masters \
 --username $user
+
+export KUBECONFIG=~/.kube/$user

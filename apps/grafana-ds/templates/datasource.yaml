@@ -21,6 +21,7 @@ spec:
     url: {{ .url }}
     jsonData:
       "tlsSkipVerify": true
+      "timeInterval": "5s"
       {{- range $key, $value := .jsonData }}
       {{ $key }}: {{ $value | quote }}
       {{- end }}

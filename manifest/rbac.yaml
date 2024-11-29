@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pargade
+  name: pratik-argade
   namespace: utilities
 
 ---
@@ -40,7 +40,7 @@ metadata:
   namespace: utilities
 subjects:
   - kind: ServiceAccount
-    name: pargade
+    name: pratik-argade
     namespace: utilities
 roleRef:
   kind: Role
