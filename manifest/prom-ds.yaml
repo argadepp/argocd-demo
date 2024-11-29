@@ -6,7 +6,7 @@ metadata:
 spec:
   instanceSelector:
     matchLabels:
-      app.kubernetes.io/instance: "grafana-operator"
+      app.kubernetes.io/instance: std-practice-grafana-operators
   datasource:
     name: prom
     type: prometheus
