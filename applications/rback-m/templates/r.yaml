@@ -1,0 +1,26 @@
+{{- range $namespace := .Values.rbac.namespaces }}
+{{- range $role := $namespace.roles }}
+{{- if eq $role.type "view" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ $namespace.name }}-view"
+  namespace: "{{ $namespace.name }}"
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "deployments"]
+    verbs: ["get", "list", "watch"]
+{{- end }}
+{{- if eq $role.type "admin" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ $namespace.name }}-admin"
+  namespace: "{{ $namespace.name }}"
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: std-practice-grafana-ds
+  name: std-practice-grafana-ds-1
   namespace: argocd
 spec:
   project: default
@@ -16,7 +16,7 @@ spec:
           namePrefix: std-practice-ds-
           grafanaInstance: std-practice-grafana-operator
         datasources:
-          - name: loki
+          - name: loki-1
             type: loki
             url: http://std-practice-loki-stack.utilities.svc.cluster.local:3100
             access: proxy
@@ -24,7 +24,7 @@ spec:
               tlsSkipVerify: true
               timeInterval: "5s"
             namespace: utilities  
-          - name: prometheus
+          - name: prometheus-1
             type: prometheus
             url: http://prometheus-operated.utilities.svc.cluster.local:9090
             access: proxy

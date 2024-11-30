@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trudesk-ingress
+  namespace: hosting
+  annotations:
+    kubernetes.io/ingress.class: "nginx"          # Specify the ingress class
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Reference to the ClusterIssuer
+spec:
+  tls:
+    - hosts:
+        - desk.pratikargade.online
+      secretName: desk.pratikargade.online-tls
+  rules:
+    - host: desk.pratikargade.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: trudesk
+                port:
+                  number: 8118

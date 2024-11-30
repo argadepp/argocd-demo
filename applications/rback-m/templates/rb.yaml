@@ -1,0 +1,19 @@
+{{- range $namespace := .Values.rbac.namespaces }}
+{{- range $role := $namespace.roles }}
+{{- range $sa := $role.serviceAccounts }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "{{ $sa }}-{{ $role.type }}-binding"
+  namespace: "{{ $namespace.name }}"
+subjects:
+  - kind: ServiceAccount
+    name: "{{ $sa }}"
+    namespace: "{{ $namespace.name }}"
+roleRef:
+  kind: Role
+  name: "{{ $namespace.name }}-{{ $role.type }}"
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,9 @@
+rbac:
+  namespaces:
+    - name: "utilities"
+      roles:
+        - type: "admin"
+          serviceAccounts:
+            - "sshinde"
+            - "pargade"
+            - "vghadge"

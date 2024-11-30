@@ -28,6 +28,7 @@ spec:
           grafanaImageTag: 11.2.0-debian-12-r3
           ingressHost: grafana.pratikargade.online
           persistenceSize: 1Gi
+          
         grafanaMimir:
           enabled: false
           repoURL: https://grafana.github.io/helm-charts

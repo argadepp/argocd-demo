@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rbac-management
+description: A Helm chart for managing RBAC roles and bindings in an EKS cluster
+type: application
+version: 0.1.0
+appVersion: v1

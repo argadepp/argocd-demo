@@ -9,7 +9,7 @@ aws iam attach-role-policy --role-name $user --policy-arn arn:aws:iam::aws:polic
 
 aws iam attach-role-policy --role-name $user --policy-arn arn:aws:iam::637423592422:policy/eks-role-policy
 
-kubectl annotate serviceaccount $user -n utilities   eks.amazonaws.com/role-arn=arn:aws:iam::637423592422:role/pratik-argade
+kubectl annotate serviceaccount $user -n utilities   eks.amazonaws.com/role-arn=arn:aws:iam::637423592422:role/$user
 
 aws eks update-kubeconfig \
   --region ap-south-1 \

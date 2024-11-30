@@ -1,0 +1,11 @@
+{{- range $namespace := .Values.rbac.namespaces }}
+{{- range $role := $namespace.roles }}
+{{- range $sa := $role.serviceAccounts }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "{{ $sa }}"
+  namespace: "{{ $namespace.name }}"
+{{- end }}
+{{- end }}
+{{- end }}
