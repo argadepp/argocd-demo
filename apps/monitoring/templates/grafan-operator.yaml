@@ -33,7 +33,6 @@ spec:
             ingressClassName: "nginx"
             host: {{ .Values.grafanaOperator.ingressHost }}
             path: /
-            tls: true
           persistence:
             enabled: true
             size: {{ .Values.grafanaOperator.persistenceSize }}
