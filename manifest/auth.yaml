@@ -1,0 +1,110 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-confirm
+  namespace: httpbin
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  jwtRules:
+    - issuer: "http://keycloak.keycloak.svc.cluster.local/realms/istio"
+      jwksUri: "http://keycloak.keycloak.svc.cluster.local/realms/istio/protocol/openid-connect/certs"
+      audiences:
+        - "istio"
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: verify-jwt
+  namespace: httpbin
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            requestPrincipals: ["http://keycloak.keycloak.svc.cluster.local/realms/istio/*"]
+      when:
+        - key: request.auth.claims[aud]
+          values: ["istio"]
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   name: nginx
+#   namespace: istio-system
+# spec:
+#   selector:
+#     istio: ingressgateway
+#   servers:
+#     - port:
+#         number: 80
+#         name: http
+#         protocol: HTTP
+#       hosts:
+#         - "*"
+    
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway 
+  hosts:
+  - "nginx.web.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/" 
+    route:
+    - destination:
+        host: nginx.web.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy-keycloak
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway
+  hosts:
+  - "keycloak.keycloak.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/" 
+    route:
+    - destination:
+        host: keycloak.keycloak.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy-proxy
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway
+  hosts:
+  - "oauth2-proxy.keycloak.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: oauth2-proxy.keycloak.svc.cluster.local
+        port:
+          number: 80

@@ -9,7 +9,7 @@ trudesk:
     port: 8118
   ingress:
     enabled: true
-    hosts: desk.eks.pratikargade.online
+    hosts: desk.eks.localhost
     paths:
       - path: /
         pathType: Prefix

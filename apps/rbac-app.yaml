@@ -8,19 +8,18 @@ spec:
   source:
     repoURL: https://github.com/argadepp/argocd-demo.git
     targetRevision: master # Specify the version of the grafana-operator chart
-    path: apps/rbacmanager
+    path: applications/rback-m
     helm:
       values: |
-        users:
-          - name: "pratik-argade"
-            namespace: "utilities"
-            role: "admin"
-          - name: "vishal-bobade"
-            namespace: "utilities"
-            role: "view"
-          - name: "ruturaj-kadikar"
-            namespace: "utilities"
-            role: "edit"
+        rbac:
+          namespaces:
+            - name: "utilities"
+              roles:
+                - type: "admin"
+                  serviceAccounts:
+                    - "sshinde"
+                    - "pargade"
+                    - "vghadge"
 
   destination:
     server: https://kubernetes.default.svc

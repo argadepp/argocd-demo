@@ -26,7 +26,7 @@ spec:
           chart: grafana-operator
           operatorImageTag: 5.13.0-debian-12-r0
           grafanaImageTag: 11.2.0-debian-12-r3
-          ingressHost: grafana.pratikargade.online
+          ingressHost: grafana.localhost
           persistenceSize: 1Gi
           
         grafanaMimir:
@@ -40,7 +40,7 @@ spec:
           
         prom: 
           enabled: true    
-          ingressHost: prom.pratikargade.online
+          ingressHost: prom.localhost
           remoteWrite:
           - url: http://std-practice-grafana-mimir-distributor.utilities.svc.cluster.local/api/v1/push
           remoteRead:

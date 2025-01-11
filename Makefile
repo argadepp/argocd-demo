@@ -38,6 +38,10 @@ eks-access:
       --username $(USER) 
 
 
+keycloak:
+	#helm install keycloak codecentric/keycloak
+	helm upgrade --install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak --version 17.0.0 -n keycloak --create-namespace -f cluster/keycloak-values.yaml
+
 .PHONY: trace-cluster
 trace-cluster:
 	$(KIND) create cluster --name $(CLUSTER_NAME) --config cluster/trace-cluster.yaml
@@ -60,6 +64,11 @@ install-apps:
 get-pass:
 	kubectl get secret -n utilities std-practice-grafana-operator-grafana-admin-credentials -o json | jq -r .data.GF_SECURITY_ADMIN_PASSWORD | base64 -d
 
+
+install-istio:
+	istioctl install -y
+	kubectl patch deployments.apps -n istio-system istio-ingressgateway -p '{"spec":{"template":{"spec":{"containers":[{"name":"istio-proxy","ports":[{"containerPort":8080,"hostPort":80},{"containerPort":8443,"hostPort":443}]}]}}}}'
+	kubectl apply -f  manifest/gateway.yaml
 #Delete kind cluster
 .PHONY: delete-cluster
 delete-cluster:

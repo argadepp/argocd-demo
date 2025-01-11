@@ -80,7 +80,7 @@ The applications directory contains multiple applications, including:
 
 You can find the complete project in the repository: [argocd-demo.git](https://github.com/argadepp/argocd-demo.git)
 
-For more details read full [blog](https://newblog.pratikargade.online/blogs/kubernetes-demo.html)
+For more details read full [blog](https://newblog.localhost/blogs/kubernetes-demo.html)
 ## 📦 Applications
 🌟 Grafana Dashboard
 The Grafana dashboard configuration can be found in applications/grafana-dashboard, including sample JSON dashboards and monitoring templates.

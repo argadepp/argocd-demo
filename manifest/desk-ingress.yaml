@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - desk.pratikargade.online
-      secretName: desk.pratikargade.online-tls
+        - desk.localhost
+      secretName: desk.localhost-tls
   rules:
-    - host: desk.pratikargade.online
+    - host: desk.localhost
       http:
         paths:
           - path: /

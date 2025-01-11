@@ -1,0 +1,14 @@
+config:
+  provider: "keycloak"
+  provider_display_name: "Keycloak"
+  email_domains: ["*"]
+  cookie_secure: "false"
+  scope: "openid"
+  whitelist_domains: [".localhost*"]
+  oidc_issuer_url: "https://keycloak.localhost/auth/realms/myapp"
+  client_id: "myapp"
+  client_secret: "phFGzRNDj5punSvRVjZpWLWgm9TTMW54"
+  redirect_url: "https://nginx.localhost/oauth2/callback"
+  cookie_secret: "9kTEdSNf4Ztn4eOQecv8cgBwkG3kS6Iv"
+  set_authorization_header: true
+  set_xauthrequest: true

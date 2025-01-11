@@ -1,0 +1,181 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nginx
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 3333
+      name: http
+      protocol: HTTP
+    hosts:
+    - nginx.web.svc.cluster.local
+    - keycloak.keycloak.svc.cluster.local
+    - oauth2-proxy.keycloak.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway 
+  hosts:
+  - "nginx.web.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/" 
+    route:
+    - destination:
+        host: nginx.web.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy-keycloak
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway
+  hosts:
+  - "keycloak.keycloak.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/" 
+    route:
+    - destination:
+        host: keycloak.keycloak.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: oauth2-proxy-proxy
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway
+  hosts:
+  - "oauth2-proxy.keycloak.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: oauth2-proxy.keycloak.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: oauth2-proxy-filter
+  namespace: httpbin
+spec:
+  workloadSelector:
+    labels:
+      app: httpbin
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+              subFilter:
+                name: "envoy.filters.http.router"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.ext_authz
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+            http_service:
+              server_uri:
+                uri: http://oauth2-proxy.keycloak.svc.cluster.local
+                cluster: outbound|80||oauth2-proxy.keycloak.svc.cluster.local
+                timeout: 5s
+              authorization_request:
+                allowed_headers:
+                  patterns:
+                    - exact: "cookie"
+                    - exact: "authorization"
+              authorization_response:
+                allowed_upstream_headers:
+                  patterns:
+                    - exact: "set-cookie"
+                    - exact: "authorization"          
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: httpbin-proxy
+  namespace: istio-system
+spec:
+  gateways:
+    - istio-system/httpbin-gateway
+  hosts:
+  - "httpbin.httpbin.svc.cluster.local"
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: httpbin.httpbin.svc.cluster.local
+        port:
+          number: 80                    
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: oauth2-proxy
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+
+---
+# ClusterRoleBinding for OAuth2-proxy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oauth2-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: oauth2-proxy
+subjects:
+- kind: ServiceAccount
+  name: oauth2-proxy
+  namespace: keycloak
+---
+# DestinationRule for OAuth2-proxy
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: oauth2-proxy
+  namespace: keycloak
+spec:
+  host: oauth2-proxy.keycloak.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
