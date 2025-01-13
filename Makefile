@@ -41,18 +41,20 @@ eks-access:
 keycloak:
 	#helm install keycloak codecentric/keycloak
 	helm upgrade --install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak --version 17.0.0 -n keycloak --create-namespace -f cluster/keycloak-values.yaml
+
+#Deploy influxdb  to store k6 result
 deploy-influx:
 	helm repo add influxdata https://helm.influxdata.com/
     helm repo update
     helm install influxdb influxdata/influxdb \
         --namespace utilities
-
-run-k6-test:
-	kubectl apply -f k6test/k6-test.yaml
-
-
+# deploy test app for running k6 test		
 deploy-test-app:
 	kubectl apply -f manifest/nginx-app.yaml
+
+# Run k6 test on deployed app
+run-k6-test:
+	kubectl apply -f k6test/k6-test.yaml
 
 .PHONY: trace-cluster
 trace-cluster:
