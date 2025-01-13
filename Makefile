@@ -47,6 +47,10 @@ deploy-influx:
     helm install influxdb influxdata/influxdb \
         --namespace utilities
 
+run-k6-test:
+	kubectl apply -f k6test/k6-test.yaml
+
+
 deploy-test-app:
 	kubectl apply -f manifest/nginx-app.yaml
 
