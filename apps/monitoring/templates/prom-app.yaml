@@ -18,11 +18,10 @@ spec:
             enabled: true
             hostname: prom.localhost
             ingressClassName: "nginx"
-          enableRemoteWriteReceiver: true  
           remoteWrite:
-          - url: http://prom.localhost/api/v1/push
+          - url: http://prom.localhost/push
           remoteRead:
-          - url: http://prom.localhost/api/v1/read      
+          - url: http://prom.localhost/read      
   destination:
     server: {{ .Values.global.clusterEndPoint }}
     namespace: {{ .Values.global.destNamespace }}
