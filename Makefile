@@ -41,6 +41,14 @@ eks-access:
 keycloak:
 	#helm install keycloak codecentric/keycloak
 	helm upgrade --install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak --version 17.0.0 -n keycloak --create-namespace -f cluster/keycloak-values.yaml
+deploy-influx:
+	helm repo add influxdata https://helm.influxdata.com/
+    helm repo update
+    helm install influxdb influxdata/influxdb \
+        --namespace utilities
+
+deploy-test-app:
+	kubectl apply -f manifest/nginx-app.yaml
 
 .PHONY: trace-cluster
 trace-cluster:
