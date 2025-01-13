@@ -41,10 +41,11 @@ spec:
         prom: 
           enabled: true    
           ingressHost: prom.localhost
+          enableRemoteWriteReceiver: true
           remoteWrite:
-          - url: http://std-practice-grafana-mimir-distributor.utilities.svc.cluster.local/api/v1/push
+          - url: http://prom.localhost/api/v1/push
           remoteRead:
-          - url: http://std-practice-grafana-mimir-querier.utilities.svc.cluster.local/api/v1/read 
+          - url: http://prom.localhost/api/v1/read 
         
         cloudwatch:
           enabled: false  
