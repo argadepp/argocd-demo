@@ -52,3 +52,24 @@ spec:
             name: nginx-service
             port:
               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: influx-ingress
+  namespace: utilities
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: influx.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: influxdb
+            port:
+              number: 8086
