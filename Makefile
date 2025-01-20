@@ -44,14 +44,13 @@ keycloak:
 
 #Deploy influxdb  to store k6 result
 deploy-influx:
-	helm repo add influxdata https://helm.influxdata.com/
-    helm repo update
-    helm install influxdb influxdata/influxdb \
-        --namespace utilities
+	helm install influxdb influxdata/influxdb --namespace utilities
 # deploy test app for running k6 test		
 deploy-test-app:
 	kubectl apply -f manifest/nginx-app.yaml
 
+install-k6-o:
+	helm upgrade --install k6-operator grafana/k6-operator -n k6 --create-namespace
 # Run k6 test on deployed app
 run-k6-test:
 	kubectl apply -f k6test/k6-test.yaml

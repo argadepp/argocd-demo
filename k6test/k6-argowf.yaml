@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: k6-load-test
+  namespace: default
+spec:
+  entrypoint: run-k6-test
+  templates:
+    - name: run-k6-test
+      steps:
+        - - name: apply-configmap
+            template: apply-manifest
+            arguments:
+              parameters:
+                - name: manifest
+                  value: |
+                    apiVersion: v1
+                    kind: ConfigMap
+                    metadata:
+                      name: k6-test-script
+                      namespace: default
+                    data:
+                      test.js: |
+                        import http from 'k6/http';
+                        import { check, sleep } from 'k6';
+
+                        export let options = {
+                          vus: 10, // Number of virtual users
+                          duration: '30s', // Duration of the test
+                        };
+
+                        export default function () {
+                          let res = http.get('http://nginx-service.default.svc.cluster.local');
+                          check(res, {
+                            'is status 200': (r) => r.status === 200,
+                          });
+                          sleep(1);
+                        }
+
+        - - name: apply-k6-test
+            template: apply-manifest
+            arguments:
+              parameters:
+                - name: manifest
+                  value: |
+                    apiVersion: k6.io/v1alpha1
+                    kind: K6
+                    metadata:
+                      name: k6-test
+                      namespace: default
+                    spec:
+                      parallelism: 5
+                      script:
+                        configMap:
+                          name: k6-test-script
+                      arguments: --out influxdb=http://influxdb.utilities.svc.cluster.local:8086/k6
+
+    - name: apply-manifest
+      inputs:
+        parameters:
+          - name: manifest
+      container:
+        image: bitnami/kubectl:latest
+        command: [sh, -c]
+        args:
+          - |
+            echo "{{inputs.parameters.manifest}}" | kubectl apply -f -
