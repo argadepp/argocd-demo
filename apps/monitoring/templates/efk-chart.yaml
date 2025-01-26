@@ -7,9 +7,9 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    repoURL: https://github.com/argadepp/argocd-demo.git
+    repoURL: https://argadepp.github.io/helm-chart
     targetRevision: 0.0.1
-    chart: applications/efk-chart
+    chart: efk-chart
     helm:
       values: |
         ## Minimal Helm values ##
