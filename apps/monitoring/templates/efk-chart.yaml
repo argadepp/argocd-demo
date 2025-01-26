@@ -8,7 +8,7 @@ spec:
   project: {{ .Values.global.project }}
   source:
     repoURL: https://argadepp.github.io/helm-chart
-    targetRevision: 0.0.1
+    targetRevision: 0.1.0
     chart: efk-chart
     helm:
       values: |
