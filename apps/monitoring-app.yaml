@@ -49,6 +49,8 @@ spec:
         
         cloudwatch:
           enabled: false  
+        efk: 
+          enabled: true  
   destination:
     server: https://kubernetes.default.svc
     namespace: utilities

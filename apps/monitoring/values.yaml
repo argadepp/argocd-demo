@@ -31,3 +31,5 @@ prom:
 cloudwatch:
   enabled: true  
 
+efk:
+  enabled: true

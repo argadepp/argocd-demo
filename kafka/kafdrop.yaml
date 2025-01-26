@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  labels:
+    app: kafdrop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafdrop
+  template:
+    metadata:
+      labels:
+        app: kafdrop
+    spec:
+      containers:
+        - name: kafdrop
+          image: obsidiandynamics/kafdrop:latest
+          ports:
+            - containerPort: 9000
+          env:
+            - name: KAFKA_BROKERCONNECT
+              value: "kafka.kafka.svc.cluster.local:9092" # Advertised listeners for Kafka (replace with EC2 IP)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop-service
+spec:
+  selector:
+    app: kafdrop
+  ports:
+    - port: 9000
+      targetPort: 9000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafdrop-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"  
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: kafdrop.localhost  # Replace with your desired domain (or use your external IP)
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kafdrop-service
+                port:
+                  number: 9000

@@ -49,6 +49,9 @@ deploy-influx:
 deploy-test-app:
 	kubectl apply -f manifest/nginx-app.yaml
 
+deploy-kafka:
+	helm upgrade -i kafka bitnami/kafka -n kafka --create-namespace
+
 install-k6-o:
 	helm upgrade --install k6-operator grafana/k6-operator -n k6 --create-namespace
 # Run k6 test on deployed app

@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: drupal-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /tmp/drupal-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drupal
+spec:
+  selector:
+    matchLabels:
+      app: drupal
+  template:
+    metadata:
+      labels:
+        app: drupal
+    spec:
+      containers:
+        - name: drupal
+          image: drupal:9.4.5-php8.1-fpm
+          env:
+            - name: DRUPAL_DATABASE_DRIVER
+              value: mysql
+            - name: DRUPAL_DATABASE_HOST
+              value: mysql
+            - name: DRUPAL_DATABASE_NAME
+              value: drupal
+            - name: DRUPAL_DATABASE_USER
+              value: drupaluser
+            - name: DRUPAL_DATABASE_PASSWORD
+              value: drupalpassword
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: drupal-persistent-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: drupal-persistent-storage
+          persistentVolumeClaim:
+            claimName: drupal-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: drupal
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: drupal
+  type: ClusterIP

@@ -1,0 +1,4 @@
+kibana:
+  ingress:
+    enabled: true
+    host: kibana.localhost

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: efk-chart
+description: A Helm chart for EFK (Elasticsearch , Fluentd , Kibana)
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
