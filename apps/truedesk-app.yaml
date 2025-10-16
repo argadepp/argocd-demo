@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/argadepp/argocd-demo.git
-    targetRevision: master
-    path: applications/truedesk
+    repoURL: https://argadepp.github.io/helm-chart/
+    targetRevision: 0.1.0
+    chart: truedesk
     helm:
       values: |
         ## Minimal Helm values ## 
@@ -23,9 +23,9 @@ spec:
             port: 8118
           ingress:
             enabled: true
-            hosts: desk.localhost
+            hosts: localhost
             paths:
-              - path: /
+              - path: /truedesk
                 pathType: Prefix
           resources:
             requests:

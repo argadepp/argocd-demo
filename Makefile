@@ -71,7 +71,7 @@ sleep1:
 #install specific utility on cluster
 install-argocd:
 	helm repo add argocd https://argoproj.github.io/argo-helm
-	helm upgrade -i argocd argocd/argo-cd --version 7.3.4 -n argocd --create-namespace -f cluster/argo-values.yaml
+	helm upgrade -i argocd argocd/argo-cd --version 8.2.0 -n argocd --create-namespace -f cluster/argo-values.yaml
 sleep2:
 	sleep 60
 install-apps:

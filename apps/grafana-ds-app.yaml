@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/argadepp/argocd-demo.git
+    repoURL: https://argadepp.github.io/helm-chart
     targetRevision: master
-    path: apps/grafana-ds
+    path: monitoring
     helm:
       values: |
         ## Minimal Helm values ## 

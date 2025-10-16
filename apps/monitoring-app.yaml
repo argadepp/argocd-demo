@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/argadepp/argocd-demo.git
-    targetRevision: master
-    path: apps/monitoring
+    repoURL: https://argadepp.github.io/helm-chart/
+    chart: monitoring          # 👈 chart name from your Chart.yaml
+    targetRevision: 0.1.0      # 👈 chart version
     helm:
       values: |
         ## Minimal Helm values ##        
@@ -17,16 +17,15 @@ spec:
           clusterEndPoint: https://kubernetes.default.svc
           project: default
         
-        
         namePrefix: std-practice-
         grafanaOperator:
-          enabled: true
+          enabled: false
           repoURL: https://charts.bitnami.com/bitnami
           targetRevision: 4.7.2
           chart: grafana-operator
           operatorImageTag: 5.13.0-debian-12-r0
           grafanaImageTag: 11.2.0-debian-12-r3
-          ingressHost: grafana.localhost
+          ingressHost: windows.local
           persistenceSize: 1Gi
           
         grafanaMimir:
@@ -40,12 +39,7 @@ spec:
           
         prom: 
           enabled: true    
-          ingressHost: prom.localhost
-          enableRemoteWriteReceiver: true
-          remoteWrite:
-          - url: http://prom.localhost/api/v1/push
-          remoteRead:
-          - url: http://prom.localhost/api/v1/read 
+          ingressHost: localhost
         
         cloudwatch:
           enabled: false  
@@ -61,4 +55,3 @@ spec:
     syncOptions:
       - CreateNamespace=true  
       - "ServerSideApply=true"
-
