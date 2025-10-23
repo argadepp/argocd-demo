@@ -1,25 +1,30 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  apiServerAddress: "127.0.0.1"
+  disableDefaultCNI: false
+  kubeProxyMode: "iptables"
+
 nodes:
 - role: control-plane
   kubeadmConfigPatches:
   - |
     kind: ClusterConfiguration
     apiServer:
-        extraArgs:
-          audit-log-path: /tmp/kubernetes/kube-apiserver-audit.log
-          audit-policy-file: /etc/kubernetes/policies/audit-policy.yaml
-        extraVolumes:
-          - name: audit-policies
-            hostPath: /etc/kubernetes/policies
-            mountPath: /etc/kubernetes/policies
-            readOnly: true
-            pathType: DirectoryOrCreate
-          - name: "audit-logs"
-            hostPath: "/tmp/kubernetes"
-            mountPath: "/tmp/kubernetes"
-            readOnly: false
-            pathType: DirectoryOrCreate
+      extraArgs:
+        audit-log-path: /tmp/kubernetes/kube-apiserver-audit.log
+        audit-policy-file: /etc/kubernetes/policies/audit-policy.yaml
+      extraVolumes:
+        - name: audit-policies
+          hostPath: /etc/kubernetes/policies
+          mountPath: /etc/kubernetes/policies
+          readOnly: true
+          pathType: DirectoryOrCreate
+        - name: "audit-logs"
+          hostPath: "/tmp/kubernetes"
+          mountPath: "/tmp/kubernetes"
+          readOnly: false
+          pathType: DirectoryOrCreate
   - |
     kind: InitConfiguration
     nodeRegistration:
@@ -32,6 +37,9 @@ nodes:
   - hostPath: /tmp/kubernetes
     containerPath: /tmp/kubernetes
     readOnly: false
+  - hostPath: /var/run/docker.sock
+    containerPath: /var/run/docker.sock
+    readOnly: false
   extraPortMappings:
   - containerPort: 80
     hostPort: 80
@@ -39,6 +47,6 @@ nodes:
   - containerPort: 443
     hostPort: 443
     protocol: TCP
-- role: worker
-- role: worker
 
+- role: worker
+- role: worker

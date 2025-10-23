@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: flask-logger
-        image: python:3.8-slim
+        image: python:latest
         env:
           - name: FLASK_APP
             value: /app/app.py

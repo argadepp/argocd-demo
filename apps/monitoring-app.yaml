@@ -38,13 +38,12 @@ spec:
           enabled: true
           
         prom: 
-          enabled: true    
-          ingressHost: localhost
+          enabled: true             
         
         cloudwatch:
           enabled: false  
         efk: 
-          enabled: true  
+          enabled: false  
   destination:
     server: https://kubernetes.default.svc
     namespace: utilities
