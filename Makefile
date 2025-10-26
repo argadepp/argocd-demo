@@ -119,4 +119,6 @@ delete-cluster:
 .PHONY: reset
 reset: clean delete-cluster
 
+install-grafana-agent:
+	kubectl apply -f https://raw.githubusercontent.com/grafana/pdc-agent/main/production/kubernetes/pdc-agent-deployment.yaml
 
