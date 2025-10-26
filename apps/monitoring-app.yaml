@@ -38,7 +38,7 @@ spec:
           enabled: true
           
         prom: 
-          enabled: true             
+          enabled: false             
         
         cloudwatch:
           enabled: false  
