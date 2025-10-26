@@ -80,6 +80,31 @@ install-apps:
 get-pass:
 	kubectl get secret -n utilities std-practice-grafana-operator-grafana-admin-credentials -o json | jq -r .data.GF_SECURITY_ADMIN_PASSWORD | base64 -d
 
+ingress-patch:
+	kubectl patch deployment ingress-nginx-controller \
+    -n ingress-nginx \
+    --type='merge' \
+    -p '{
+      "spec": {
+        "template": {
+          "spec": {
+            "nodeSelector": {
+              "kubernetes.io/hostname": "demo-stuff-control-plane"
+            }
+          }
+        }
+      }
+    }'
+
+install-prom:
+	helm upgrade --install prometheus prometheus-community/prometheus \
+    --namespace utilities --create-namespace \
+    --set server.ingress.enabled=true \
+    --set server.ingress.ingressClassName=nginx \
+    --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"="/" \
+    --set server.ingress.hosts[0]="prom.devopspratik.tech" \
+    --set server.ingress.paths[0]="/" \
+    --set server.service.type=ClusterIP
 
 install-istio:
 	istioctl install -y
