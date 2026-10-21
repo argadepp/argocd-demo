@@ -17,6 +17,7 @@ K3D_AGENTS ?= 2
 K3D_HTTP_PORT ?= 8081
 K3D_HTTPS_PORT ?= 8444
 PROM_INGRESS_CLASS ?= $(if $(filter k3d,$(PROVIDER)),traefik,nginx)
+ARGOCD_INGRESS_CLASS ?= $(if $(filter k3d,$(PROVIDER)),traefik,nginx)
 
 # Pin the current upstream Argo CD application and chart separately.
 ARGOCD_CHART_VERSION ?= 10.10.5
@@ -130,14 +131,23 @@ sleep1:
 	sleep 20
 
 # Install Argo CD from the official Argo Helm OCI registry.
-# OCI avoids the GitHub release-assets redirect used by the classic Helm repository.
+# The values file enables ingress. Use the controller class matching each provider:
+# NGINX for Kind and Traefik (bundled with k3s) for k3d.
 .PHONY: install-argocd
 install-argocd:
-ifeq ($(PROVIDER),kind)
-	$(LOCAL_HELM) upgrade --install argocd oci://ghcr.io/argoproj/argo-helm/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --timeout 10m --wait
-else
-	$(LOCAL_HELM) upgrade --install argocd oci://ghcr.io/argoproj/argo-helm/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --set server.ingress.enabled=false --timeout 10m --wait
-endif
+	$(LOCAL_HELM) upgrade --install argocd oci://ghcr.io/argoproj/argo-helm/argo-cd \
+		--version $(ARGOCD_CHART_VERSION) \
+		-n argocd --create-namespace \
+		-f cluster/argo-values.yaml \
+		--set global.image.tag=$(ARGOCD_VERSION) \
+		--set server.ingress.enabled=true \
+		--set server.ingress.ingressClassName=$(ARGOCD_INGRESS_CLASS) \
+		--timeout 10m --wait
+
+.PHONY: argocd-ingress-status
+argocd-ingress-status:
+	$(LOCAL_KUBECTL) -n argocd get ingress
+	$(LOCAL_KUBECTL) -n argocd describe ingress argocd-server
 
 .PHONY: sleep2
 sleep2:
