@@ -40,10 +40,15 @@ make delete-cluster PROVIDER=k3d
 
 ## Install Argo CD
 
+The Makefile pins the Argo CD Helm chart to `10.10.5` and the Argo CD application image to `v3.5.6` by default. These are separate version numbers: the former is the chart package, the latter is the Argo CD application version. Override them when intentionally testing another release.
+
 ```bash
 make install-argocd PROVIDER=kind
 # or
 make install-argocd PROVIDER=k3d
+
+# Override the pinned versions when needed
+make install-argocd PROVIDER=k3d ARGOCD_CHART_VERSION=10.10.5 ARGOCD_VERSION=v3.5.6
 
 # Expose Argo CD locally and open http://localhost:8080
 make argocd-port-forward PROVIDER=k3d
@@ -57,6 +62,16 @@ For Kind, the existing values file enables the configured ingress. For k3d, the 
 - **k3d:** `make install-ingress PROVIDER=k3d` verifies the bundled Traefik deployment instead of installing a Kind-specific controller.
 
 The legacy `ingress-patch` target is Kind-specific and is guarded accordingly.
+
+## AWS IAM role mapping without committed account IDs
+
+The `eks-access` target no longer contains a hard-coded AWS account number. Supply the full IAM role ARN when invoking it:
+
+```bash
+make eks-access AWS_ROLE_ARN=arn:aws:iam::<account-id>:role/<role-name>
+```
+
+Replace the placeholders with the role ARN for your AWS environment. Avoid committing account-specific identifiers or credentials when they are not needed in source control.
 
 ## Existing capabilities
 
