@@ -1,113 +1,85 @@
-# 🎉 Kubernetes Microservices Deployment with Observability
+# Kubernetes GitOps and Observability Lab
 
-## 🚀 Overview
+A local Kubernetes lab for experimenting with Argo CD, ApplicationSets, Helm, observability, service meshes, and workload deployment workflows. The Makefile supports **Kind** (default) and **k3d** while retaining separate targets for optional EKS operations.
 
-This project demonstrates a microservices-based application deployment on a local Kubernetes environment using **KIND** (Kubernetes in Docker). It includes multiple applications such as **SockShop**, **Grafana Dashboard**, and **Truedesk**, along with observability tools like **Loki** and **Grafana**. Deployment and setup scripts are managed using a **Makefile** for ease of use.
+## Prerequisites
 
----
+- Docker
+- `kubectl` and `helm`
+- Either `kind` or `k3d` (install both if you want to switch between providers)
+- `make`
 
-## 📁 Project Structure
-``` plaintext
-.
-├── applications                # Application Helm charts and deployment manifests
-│   ├── grafana-dashboard       # Grafana dashboards and configs
-│   ├── log-application         # Logging application deployment
-│   ├── sockshop                # Sockshop microservices application
-│   └── truedesk                # Truedesk application resources
-├── apps                        # Pre-configured app files for Grafana, Istio, Loki, Prometheus, SockShop
-├── cluster                     # KIND cluster configuration and ArgoCD values
-├── kargotest                   # Test resources for Kargo setup
-├── Makefile                    # Build and deployment commands
-└── README.md                   # Project documentation
-```
+## Choose a local cluster provider
 
-## 📋 Prerequisites
-Before you begin, ensure you have the following installed:
-
-- Docker 🐳
-- KIND 🌟
-- kubectl 🔧
-Make sure that both KIND and kubectl are in your system's PATH.
-
-## 🛠️ Setup Instructions
-1. Create a KIND Cluster
-To create the KIND cluster as defined in cluster/cluster.yaml, run:
-
-  ```bash
-  make create-cluster
-  ```
-This command creates a KIND cluster named demo-stuff (default name) using the specified configuration.
-
-2. Install Ingress Controller
-To deploy the Ingress-NGINX controller in the ingress-nginx namespace, execute:
+Kind remains the default to preserve existing usage:
 
 ```bash
-make install-ingress
-```
-This command applies the official Ingress-NGINX manifest for KIND.
+# Create the existing Kind cluster (uses cluster/cluster.yaml)
+make create-cluster
 
-3. Install ArgoCD
-To install ArgoCD using Helm with custom values from cluster/argo-values.yaml, run:
+# Create a k3d cluster with 1 server and 2 agents
+make create-cluster PROVIDER=k3d
+
+# Use a different cluster name
+make create-cluster PROVIDER=k3d CLUSTER_NAME=argo-lab
+
+# Override published ports (defaults: HTTP 8081, HTTPS 8444)
+make create-cluster PROVIDER=k3d K3D_HTTP_PORT=80 K3D_HTTPS_PORT=443
+
+# Inspect the selected local cluster/context
+make cluster-status PROVIDER=kind
+make cluster-status PROVIDER=k3d
+make show-context PROVIDER=k3d
+
+# Delete only the selected cluster
+make delete-cluster PROVIDER=kind
+make delete-cluster PROVIDER=k3d
+```
+
+**Important:** use the same `PROVIDER` and `CLUSTER_NAME` values for subsequent Make targets. For example, `make install-argocd PROVIDER=k3d` targets context `k3d-demo-stuff`. The default k3d port mappings use `http://localhost:8081` and `https://localhost:8444`; ports can be overridden as shown above.
+
+## Install Argo CD
 
 ```bash
-make install-argocd
+make install-argocd PROVIDER=kind
+# or
+make install-argocd PROVIDER=k3d
+
+# Expose Argo CD locally and open http://localhost:8080
+make argocd-port-forward PROVIDER=k3d
 ```
-ArgoCD will be installed in the argocd namespace, enabling GitOps-style application management.
 
-4. Delete KIND Cluster
-To delete the KIND cluster and all associated resources, run:
+For Kind, the existing values file enables the configured ingress. For k3d, the Makefile disables Argo CD ingress because k3d provides Traefik by default while the current values file declares an NGINX ingress class. Port-forwarding is the simplest provider-neutral way to access Argo CD in the lab.
 
-```bash
-make delete-cluster
-```
-This command removes the cluster named demo-stuff from your local environment.
+## Ingress behavior
 
-5. Reset: Clean Resources and Cluster
-To delete all created resources and then remove the KIND cluster, use:
+- **Kind:** `make install-ingress PROVIDER=kind` applies the ingress-nginx manifest for Kind.
+- **k3d:** `make install-ingress PROVIDER=k3d` verifies the bundled Traefik deployment instead of installing a Kind-specific controller.
 
-```bash
-make reset
-```
-This command deletes Kubernetes resources and then removes the KIND cluster.
+The legacy `ingress-patch` target is Kind-specific and is guarded accordingly.
 
-## 🛠️ Application Deployment
-The applications directory contains multiple applications, including:
+## Existing capabilities
 
-- **Grafana Dashboard:** Custom Grafana dashboard configurations.
-- **Log Application:** A sample application to test Loki logging.
-- **SockShop:** A microservices-based application mimicking an online shop.
-- **Truedesk:** A support desk application with MongoDB and Elasticsearch resources.
+The repository includes application manifests, Helm-based Argo CD installation, monitoring Application resources, Prometheus, Istio, k6 test resources, Kafka, and Kargo/ApplicationSet experiments. Some targets are environment-specific: review their values, credentials, cluster context, and external hostnames before running them.
 
-You can find the complete project in the repository: [argocd-demo.git](https://github.com/argadepp/argocd-demo.git)
+## Suggested learning path
 
-For more details read full [blog](https://newblog.localhost/blogs/kubernetes-demo.html)
-## 📦 Applications
-🌟 Grafana Dashboard
-The Grafana dashboard configuration can be found in applications/grafana-dashboard, including sample JSON dashboards and monitoring templates.
+1. Add drift detection and self-healing to a safe demo application.
+2. Expand the existing ApplicationSet example to generate applications from Git directories or environments.
+3. Test sync waves and health gates for ordered deployments.
+4. Add Argo CD notifications and Prometheus/Grafana dashboards.
+5. Add automated manifest validation and Makefile smoke checks.
 
-## 📜 Log Application
-A sample log application is available in applications/log-application to test with Loki.
+## Repository layout
 
-## 🛍️ SockShop Application
-The SockShop application is configured as a Helm chart in applications/sockshop. It includes services like carts, orders, and user management.
+- `apps/` — Argo CD Application resources
+- `applications/` — application manifests and charts
+- `cluster/` — cluster and Helm values
+- `kargotest/` — Kargo/ApplicationSet experiments
+- `manifest/` — Kubernetes manifests
+- `k6test/` — k6 load-testing resources
+- `Makefile` — cluster and lab workflows
 
-## 💼 Truedesk
-The Truedesk application is available in applications/truedesk, with supporting Elasticsearch and MongoDB stateful resources.
+## Contributing
 
-## 📊 Observability Stack
-This project includes a powerful observability stack comprising:
-
-- Loki: A logging backend for monitoring logs. 📝
-- Grafana: A visualization tool with preconfigured dashboards. 📈
-- Prometheus: For metric collection and alerting. 🚨
-These components are configured in the apps/ directory with ready-to-apply manifests for observability setup.
-
-## 🤝 Contributing
-To contribute to this project, please follow these steps:
-
-Fork the repository.
-Create a new branch for your feature or bugfix.
-Make your changes and commit them.
-Submit a pull request for review.
-## 📝 License
-This project is licensed under the MIT License.
+Create a feature branch, test the changes against the intended provider, and open a pull request. Do not commit real credentials or personal cluster configuration.
