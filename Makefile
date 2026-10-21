@@ -196,3 +196,12 @@ install-grafana-agent:
 .PHONY: argocd-port-forward
 argocd-port-forward:
 	$(LOCAL_KUBECTL) -n argocd port-forward svc/argocd-server 8080:80
+
+# Render Kargo resources using environment variables rather than committed credentials/account IDs.
+.PHONY: apply-kargo-resources
+apply-kargo-resources:
+	@test -n "$$AWS_ACCOUNT_ID" || { echo "ERROR: export AWS_ACCOUNT_ID"; exit 1; }
+	@test -n "$$KARGO_GIT_USERNAME" || { echo "ERROR: export KARGO_GIT_USERNAME"; exit 1; }
+	@test -n "$$KARGO_GIT_PASSWORD" || { echo "ERROR: export KARGO_GIT_PASSWORD"; exit 1; }
+	command -v envsubst >/dev/null || { echo "ERROR: envsubst is required (install gettext)"; exit 1; }
+	envsubst < kargotest/karg-resources/kargo.yaml | $(LOCAL_KUBECTL) apply -f -
