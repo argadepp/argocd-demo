@@ -63,6 +63,21 @@ For Kind, the existing values file enables the configured ingress. For k3d, the 
 
 The legacy `ingress-patch` target is Kind-specific and is guarded accordingly.
 
+## Kargo credentials and AWS registry configuration
+
+The Kargo manifest is now a template. Do **not** put a real GitHub token or account ID in the tracked file. First revoke the previously exposed GitHub token, then create a replacement with only the permissions the private repository needs. Supply the new value through the environment when deploying.
+
+```bash
+export AWS_ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
+export KARGO_GIT_USERNAME="your-github-username"
+read -rsp "New GitHub token: " KARGO_GIT_PASSWORD; echo
+export KARGO_GIT_PASSWORD
+make apply-kargo-resources PROVIDER=k3d
+unset KARGO_GIT_PASSWORD
+```
+
+This renders the manifest with `envsubst` and applies it to the provider-specific Kubernetes context. Install `envsubst` (usually included in the `gettext` package) first. Never paste the token into shell history or commit it to Git.
+
 ## AWS IAM role mapping without committed account IDs
 
 The `eks-access` target no longer contains a hard-coded AWS account number. Supply the full IAM role ARN when invoking it:
@@ -71,7 +86,7 @@ The `eks-access` target no longer contains a hard-coded AWS account number. Supp
 make eks-access AWS_ROLE_ARN=arn:aws:iam::<account-id>:role/<role-name>
 ```
 
-Replace the placeholders with the role ARN for your AWS environment. Avoid committing account-specific identifiers or credentials when they are not needed in source control.
+Replace the placeholders with the role ARN for your AWS environment. The ARN must include a real 12-digit AWS account ID at execution time; this change removes the ID from tracked source rather than creating an invalid ARN. The helper script also expects `AWS_ACCOUNT_ID`, `EKS_OIDC_PROVIDER_ID`, and `TRUSTED_DEPLOY_PRINCIPAL_ARN` in the environment. Avoid committing account-specific identifiers or credentials.
 
 ## Existing capabilities
 
