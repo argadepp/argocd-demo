@@ -13,7 +13,7 @@ metadata:
     kargo.akuity.io/cred-type: git
 stringData:
   repoURL: https://github.com/argadepp/kargo-demo.git
-  username: argadepp
+  username: "${KARGO_GIT_USERNAME}"
   password: "${KARGO_GIT_PASSWORD}"
 ---
 apiVersion: kargo.akuity.io/v1alpha1
