@@ -18,6 +18,10 @@ K3D_HTTP_PORT ?= 8081
 K3D_HTTPS_PORT ?= 8444
 PROM_INGRESS_CLASS ?= $(if $(filter k3d,$(PROVIDER)),traefik,nginx)
 
+# Pin the current upstream Argo CD application and chart separately.
+ARGOCD_CHART_VERSION ?= 10.10.5
+ARGOCD_VERSION ?= v3.5.6
+
 NAMESPACE ?= default
 TARGET ?= utilities
 K8S_DIR ?= k8s
@@ -72,11 +76,16 @@ eks-ingress:
 eks-ebs-addon:
 	eksctl create addon --name aws-ebs-csi-driver --cluster eks-monitoring-cluster --region ap-south-1 --force
 
+# Pass the complete IAM role ARN as an input; do not hard-code account IDs in source.
+# Example: make eks-access AWS_ROLE_ARN=arn:aws:iam::<account-id>:role/<role-name>
+AWS_ROLE_ARN ?=
+
 eks-access:
+	@test -n "$(AWS_ROLE_ARN)" || { echo "ERROR: set AWS_ROLE_ARN to the IAM role ARN to map"; exit 1; }
 	eksctl create iamidentitymapping \
       --region ap-south-1 \
       --cluster eks-monitoring-cluster \
-      --arn arn:aws:iam::637423592422:role/$(USER) \
+      --arn "$(AWS_ROLE_ARN)" \
       --group system:masters \
       --username $(USER)
 
@@ -125,9 +134,9 @@ sleep1:
 install-argocd:
 	$(HELM) repo add argocd https://argoproj.github.io/argo-helm --force-update
 ifeq ($(PROVIDER),kind)
-	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version 8.2.0 -n argocd --create-namespace -f cluster/argo-values.yaml
+	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION)
 else
-	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version 8.2.0 -n argocd --create-namespace -f cluster/argo-values.yaml --set server.ingress.enabled=false
+	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --set server.ingress.enabled=false
 endif
 
 .PHONY: sleep2
