@@ -24,7 +24,7 @@ spec:
               containerPort: 80
           readinessProbe:
             httpGet:
-              path: /intentionally-not-ready
+              path: /
               port: http
             initialDelaySeconds: 2
             periodSeconds: 3
