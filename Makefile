@@ -162,6 +162,11 @@ install-prom:
 
 install-istio:
 	istioctl install -y --context $(LOCAL_CONTEXT)
+ifeq ($(PROVIDER),kind)
+	$(LOCAL_KUBECTL) patch deployments.apps -n istio-system istio-ingressgateway -p '{"spec":{"template":{"spec":{"containers":[{"name":"istio-proxy","ports":[{"containerPort":8080,"hostPort":80},{"containerPort":8443,"hostPort":443}]}]}}}}'
+else
+	@echo "k3d ingress is published through the k3d load balancer; hostPort patch skipped."
+endif
 	$(LOCAL_KUBECTL) apply -f manifest/gateway.yaml
 
 .PHONY: delete-cluster
