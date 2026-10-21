@@ -40,7 +40,7 @@ make delete-cluster PROVIDER=k3d
 
 ## Install Argo CD
 
-The Makefile pins the Argo CD Helm chart to `10.10.5` and the Argo CD application image to `v3.5.6` by default. These are separate version numbers: the former is the chart package, the latter is the Argo CD application version. The chart's upstream `appVersion` is currently `v3.5.5`, so the Makefile explicitly overrides `global.image.tag` to use the newer Argo CD patch release. Test this combination in a disposable local cluster before applying it to an important environment, and follow Argo CD's upgrade guidance when crossing a major version.
+The Makefile installs the chart directly from the official OCI registry (`oci://ghcr.io/argoproj/argo-helm/argo-cd`) and pins the Argo CD Helm chart to `10.10.5` and the Argo CD application image to `v3.5.6` by default. Using the OCI registry avoids the GitHub release-assets download redirect that can fail if a signed download URL is stale or a proxy caches it. These are separate version numbers: the former is the chart package, the latter is the Argo CD application version. The chart's upstream `appVersion` is currently `v3.5.5`, so the Makefile explicitly overrides `global.image.tag` to use the newer Argo CD patch release. Test this combination in a disposable local cluster before applying it to an important environment, and follow Argo CD's upgrade guidance when crossing a major version.
 
 ```bash
 make install-argocd PROVIDER=kind
