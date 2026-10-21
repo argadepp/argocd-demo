@@ -50,11 +50,18 @@ make install-argocd PROVIDER=k3d
 # Override the pinned versions when needed
 make install-argocd PROVIDER=k3d ARGOCD_CHART_VERSION=10.10.5 ARGOCD_VERSION=v3.5.6
 
-# Expose Argo CD locally and open http://localhost:8080
+# Check the generated Ingress object
+make argocd-ingress-status PROVIDER=k3d CLUSTER_NAME=argocd-lab
+
+# If using the configured host argo.devopspratik.tech, add this entry to your local hosts file:
+# 127.0.0.1 argo.devopspratik.tech
+# Then access http://argo.devopspratik.tech:8081
+
+# Or expose Argo CD through a local port-forward at http://localhost:8080
 make argocd-port-forward PROVIDER=k3d
 ```
 
-For Kind, the existing values file enables the configured ingress. For k3d, the Makefile disables Argo CD ingress because k3d provides Traefik by default while the current values file declares an NGINX ingress class. Port-forwarding is the simplest provider-neutral way to access Argo CD in the lab.
+The Makefile keeps ingress enabled for both providers and selects the matching controller class: NGINX for Kind, and Traefik for k3d. Check the resulting object with `make argocd-ingress-status PROVIDER=k3d CLUSTER_NAME=argocd-lab`. The `argocd-port-forward` target remains available as a fallback.
 
 ## Ingress behavior
 
