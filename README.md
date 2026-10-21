@@ -95,6 +95,76 @@ make eks-access AWS_ROLE_ARN=arn:aws:iam::<account-id>:role/<role-name>
 
 Replace the placeholders with the role ARN for your AWS environment. The ARN must include a real 12-digit AWS account ID at execution time; this change removes the ID from tracked source rather than creating an invalid ARN. The helper script also expects `AWS_ACCOUNT_ID`, `EKS_OIDC_PROVIDER_ID`, and `TRUSTED_DEPLOY_PRINCIPAL_ARN` in the environment. Avoid committing account-specific identifiers or credentials.
 
+## Progressive Sync demo (dev → QA → production)
+
+This lab demonstrates ApplicationSet `RollingSync`. The QA deployment is intentionally configured with a readiness probe that fails, so the production Application should remain unsynced until QA becomes Healthy. The feature is enabled in `cluster/argo-values.yaml` using `applicationsetcontroller.enable.progressive.syncs: "true"`.
+
+### 1. Update the feature branch and install the configuration
+
+Run these from your repository checkout. Review or commit any local work before switching branches.
+
+```bash
+git fetch origin
+git checkout feat/k3d-provider-support
+git pull --ff-only origin feat/k3d-provider-support
+
+make install-argocd PROVIDER=k3d CLUSTER_NAME=argocd-lab
+
+# Restart the controller so it reads the progressive-sync feature flag.
+kubectl --context k3d-argocd-lab -n argocd rollout restart deployment/argocd-applicationset-controller
+kubectl --context k3d-argocd-lab -n argocd rollout status deployment/argocd-applicationset-controller --timeout=180s
+
+# Verify the feature flag appears in the command-parameters ConfigMap.
+kubectl --context k3d-argocd-lab -n argocd get configmap argocd-cmd-params-cm -o yaml | grep -i progressive
+```
+
+### 2. Apply the ApplicationSet
+
+```bash
+kubectl --context k3d-argocd-lab apply -f kargotest/progressive-sync/applicationset.yaml
+
+# Watch the three generated Applications
+kubectl --context k3d-argocd-lab -n argocd get applications.argoproj.io -L demo-environment -w
+```
+
+The ApplicationSet creates `progressive-dev`, `progressive-qa`, and `progressive-prod`. Dev is synced first. Once Dev is Healthy, QA is synced. QA's intentionally bad readiness probe keeps it Progressing, so RollingSync should hold Production until QA is Healthy.
+
+In a second terminal, inspect the deployments and Application status:
+
+```bash
+kubectl --context k3d-argocd-lab -n progressive-dev get deploy
+kubectl --context k3d-argocd-lab -n progressive-qa get deploy
+kubectl --context k3d-argocd-lab -n progressive-prod get deploy
+
+kubectl --context k3d-argocd-lab -n argocd get application progressive-dev
+kubectl --context k3d-argocd-lab -n argocd get application progressive-qa
+kubectl --context k3d-argocd-lab -n argocd get application progressive-prod
+```
+
+### 3. Release the QA gate
+
+After observing QA remain unhealthy and Production remain OutOfSync, fix the QA readiness probe from `/intentionally-not-ready` to `/`:
+
+```bash
+sed -i 's#/intentionally-not-ready#/#' progressive-sync-demo/qa/deployment.yaml
+git add progressive-sync-demo/qa/deployment.yaml
+git commit -m "fix: pass QA readiness gate in progressive sync demo"
+git push origin feat/k3d-provider-support
+```
+
+Watch the Applications again. Once QA becomes Healthy, RollingSync should proceed to Production. If QA does not refresh after the commit, inspect the QA Application's Events and refresh it in the UI/CLI to check repository revision and sync status.
+
+### 4. Cleanup
+
+Delete the ApplicationSet first. Its generated Applications and their workload resources may also be removed depending on ApplicationSet deletion policy, so inspect the result before deleting namespaces.
+
+```bash
+kubectl --context k3d-argocd-lab delete -f kargotest/progressive-sync/applicationset.yaml
+kubectl --context k3d-argocd-lab delete namespace progressive-dev progressive-qa progressive-prod
+```
+
+This is a local demonstration, not a production rollout policy. Run it in the disposable `argocd-lab` cluster, and do not point this test at production workloads.
+
 ## Existing capabilities
 
 The repository includes application manifests, Helm-based Argo CD installation, monitoring Application resources, Prometheus, Istio, k6 test resources, Kafka, and Kargo/ApplicationSet experiments. Some targets are environment-specific: review their values, credentials, cluster context, and external hostnames before running them.
