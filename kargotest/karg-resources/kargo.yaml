@@ -14,7 +14,7 @@ metadata:
 stringData:
   repoURL: https://github.com/argadepp/kargo-demo.git
   username: argadepp
-  password: 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
+  password: "${KARGO_GIT_PASSWORD}"
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Warehouse
@@ -24,7 +24,7 @@ metadata:
 spec:
   subscriptions:
   - image:
-      repoURL: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+      repoURL: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/web
       semverConstraint: ^0.1.5
       discoveryLimit: 5
 ---
@@ -46,7 +46,7 @@ spec:
       writeBranch: stage/test
       kustomize:
         images:
-        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+        - image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/web
           path: stages/test
     argoCDAppUpdates:
     - appName: kargo-demo-test
@@ -71,7 +71,7 @@ spec:
       writeBranch: stage/uat
       kustomize:
         images:
-        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+        - image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/web
           path: stages/uat
     argoCDAppUpdates:
     - appName: kargo-demo-uat
@@ -96,7 +96,7 @@ spec:
       writeBranch: stage/prod
       kustomize:
         images:
-        - image: 637423592422.dkr.ecr.ap-south-1.amazonaws.com/web
+        - image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/web
           path: stages/prod
     argoCDAppUpdates:
     - appName: kargo-demo-prod
