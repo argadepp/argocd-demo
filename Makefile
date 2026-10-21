@@ -16,6 +16,7 @@ K3D_SERVERS ?= 1
 K3D_AGENTS ?= 2
 K3D_HTTP_PORT ?= 8081
 K3D_HTTPS_PORT ?= 8444
+PROM_INGRESS_CLASS ?= $(if $(filter k3d,$(PROVIDER)),traefik,nginx)
 
 NAMESPACE ?= default
 TARGET ?= utilities
@@ -101,6 +102,7 @@ run-k6-test:
 # This specialised audit-tracing cluster uses Kind-specific configuration.
 .PHONY: trace-cluster
 trace-cluster:
+	@test "$(PROVIDER)" = "kind" || { echo "ERROR: trace-cluster requires PROVIDER=kind because its configuration is Kind-specific"; exit 1; }
 	$(KIND) create cluster --name $(CLUSTER_NAME) --config $(TRACE_KIND_CONFIG)
 
 # Kind uses the ingress-nginx manifest intended for Kind. k3d ships with Traefik
@@ -153,8 +155,7 @@ install-prom:
 	$(LOCAL_HELM) upgrade --install prometheus prometheus-community/prometheus \
 	--namespace utilities --create-namespace \
 	--set server.ingress.enabled=true \
-	--set server.ingress.ingressClassName=nginx \
-	--set server.ingress.annotations."nginx\\.ingress\\.kubernetes\\.io/rewrite-target"="/" \
+	--set server.ingress.ingressClassName=$(PROM_INGRESS_CLASS) \
 	--set server.ingress.hosts[0]="prom.devopspratik.tech" \
 	--set server.ingress.paths[0]="/" \
 	--set server.service.type=ClusterIP
