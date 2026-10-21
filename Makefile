@@ -129,14 +129,14 @@ endif
 sleep1:
 	sleep 20
 
-# Install Argo CD on the selected local cluster.
+# Install Argo CD from the official Argo Helm OCI registry.
+# OCI avoids the GitHub release-assets redirect used by the classic Helm repository.
 .PHONY: install-argocd
 install-argocd:
-	$(HELM) repo add argocd https://argoproj.github.io/argo-helm --force-update
 ifeq ($(PROVIDER),kind)
-	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION)
+	$(LOCAL_HELM) upgrade --install argocd oci://ghcr.io/argoproj/argo-helm/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --timeout 10m --wait
 else
-	$(LOCAL_HELM) upgrade --install argocd argocd/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --set server.ingress.enabled=false
+	$(LOCAL_HELM) upgrade --install argocd oci://ghcr.io/argoproj/argo-helm/argo-cd --version $(ARGOCD_CHART_VERSION) -n argocd --create-namespace -f cluster/argo-values.yaml --set global.image.tag=$(ARGOCD_VERSION) --set server.ingress.enabled=false --timeout 10m --wait
 endif
 
 .PHONY: sleep2
